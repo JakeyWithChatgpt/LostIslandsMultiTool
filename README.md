@@ -2,6 +2,8 @@ Hello! this project was made entirely with CHATGPT lol. if theres any bugs i wil
 
 To use the discord bot nuker go into the code and at the top change the token
 
+The Geo IP isnt the best right now so i will fix it in the future but it gives the you normal info
+
 With the decoder and encoder its fully custom so no one can access your stuff.
 if you want to make it more secure use morse code AND make it more hard like this
 instead of  --. .. - .... ..- -... 
