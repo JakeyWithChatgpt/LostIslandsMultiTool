@@ -1,6 +1,6 @@
 Hello! this project was made entirely with CHATGPT lol. if theres any bugs i will fix them
 
-To use the discord bot nuker go into the code and scroll all the way down and replace the token with your own,
+To use the discord bot nuker go into the code and at the top change the token
 
 With the decoder and encoder its fully custom so no one can access your stuff.
 if you want to make it more secure use morse code AND make it more hard like this
